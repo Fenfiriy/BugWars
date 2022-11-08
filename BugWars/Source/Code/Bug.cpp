@@ -4,6 +4,12 @@
 
 IMPLEMENT_RTTI(Bug);
 
+Bug::Bug()
+{
+	disabled = false;
+	visible = true;
+}
+
 void Bug::OnUpdate(float dt)
 {
 }
@@ -14,22 +20,19 @@ BugBase* Bug::FindBugToEat() const
 	float min_dist = std::numeric_limits<float>::max();
 	for (auto object : g_Game->objects)
 	{
-		if (auto bug = dynamic_cast<Bug*>(object))
+		if (object->id >= id)
+			continue; // Can't eat that
+
+		if (object->disabled)
+			continue;
+
+		if (object->GetRTTI() == Bug::s_RTTI)
 		{
-			if (bug == this)
-				continue;
-
-			if (bug->disabled)
-				continue;
-
-			if (bug->id > id)
-				continue; // Can't eat that
-
-			float dist = position.Distance(bug->position);
+			float dist = position.Distance(object->position);
 			if (dist < min_dist)
 			{
 				min_dist = dist;
-				target = bug;
+				target = dynamic_cast<Bug*>(object);
 			}
 		}
 	}
@@ -41,12 +44,12 @@ void Bug::OnEat(BugBase& first, BugBase& second)
 {
 	if (first.id > second.id)
 	{
-		second.disabled = true;
 		second.visible = false;
+		second.disabled = true;
 	}
 	else
 	{
-		first.disabled = true;
 		first.visible = false;
+		first.disabled = true;
 	}
 }

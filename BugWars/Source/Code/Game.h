@@ -2,11 +2,13 @@
 #include "GameBase/GameBase.h"
 #include "Globals.h"
 
+#define CHUNK_SIZE 500
 struct Tank;
 
 struct Game : public GameBase
 {
 	Game();
+	~Game();
 
 	virtual void OnUpdate(float dt) override;
 	virtual void OnRender() const override;
@@ -15,4 +17,6 @@ struct Game : public GameBase
 	virtual void OnBugsSpawned() override;
 
 	std::vector<GameObject*> objects;
+
+	//std::map<std::pair<int, int>, std::vector<GameObject*>> mapChunks;
 };
