@@ -19,51 +19,9 @@ void Tank::OnUpdate(float dt)
 {
 }
 
-//BugBase* Tank::GetBugToShoot() const
-//{
-//	for (int r = 0; r <= 1000 * 3 / CHUNK_SIZE; r++)
-//	{
-//		for (int i = -r; i <= r; i++)
-//			for (int j = std::abs(i) - r; j <= r - std::abs(i); j++)
-//				if (std::abs(i) + std::abs(j) == r
-//					&& g_Game->mapChunks.contains(std::pair((int)position.x / CHUNK_SIZE + i, (int)position.x / CHUNK_SIZE + j)))
-//				{
-//					auto vec = g_Game->mapChunks[std::pair(i, j)];
-//					for (auto obj : vec)
-//					{
-//						if (obj->disabled)
-//							continue;
-//						if (obj->GetRTTI() == Bug::s_RTTI)
-//						{
-//							if (obj->position.Distance(position) < 200.0f)
-//								return dynamic_cast<Bug*>(obj);
-//						}
-//					}
-//				}
-//	}
-//	return nullptr;
-//}
-
 BugBase* Tank::GetBugToShoot() const
 {
-	float min_dist = std::numeric_limits<float>::max();
-	BugBase* res = nullptr;
-
-	for (auto obj : g_Game->objects)
-	{
-		if (obj->disabled)
-			continue;
-		if (obj->GetRTTI() == Bug::s_RTTI)
-		{
-			if (obj->position.Distance(position) < min_dist)
-			{
-				min_dist = obj->position.Distance(position);
-				res = dynamic_cast<Bug*>(obj);
-			}
-		}
-	}
-
-	return res;
+	return Bug::GetClosestBug(position, [](BugBase* b) {return true; });
 }
 
 Point Tank::CalcShootDirection(Point target_pos, Point target_dir, float target_vel, float bullet_vel) const

@@ -31,9 +31,9 @@ void Game::OnUpdate(float dt)
 {
 	PIXScopedEvent(PIX_COLOR_INDEX(5), __FUNCTION__);
 	std::vector<GameObject*> to_del;
-	for (int i = 0; i < objects.size(); i++)
+	for (auto it = objects.end() - 1; it != objects.begin() - 1; it--)
 	{
-		auto obj = objects[i];
+		auto obj = *it;
 		if (!obj->disabled)
 		{
 			obj->Update(dt);
@@ -41,8 +41,7 @@ void Game::OnUpdate(float dt)
 		else
 		{
 			to_del.emplace_back(obj);
-			objects[i] = objects[objects.size() - 1];
-			objects.pop_back();
+			objects.erase(it);
 		}
 	}
 
@@ -60,10 +59,11 @@ void Game::OnRender() const
 void Game::AddObject(GameObject* object)
 {
 	objects.push_back(object);
+}
 
-	//mapChunks[std::pair<int, int>((int)object->position.x / CHUNK_SIZE, (int)object->position.y / CHUNK_SIZE)].push_back(object);
-	/*if (object->GetRTTI() == Bug::s_RTTI)
-		LogZA("I'm a bug %i", object->id);*/
+std::pair<int, int> Game::GetObjectChunk(GameObject* object)
+{
+	return std::pair<int, int>(((int)object->position.x) / CHUNK_SIZE, ((int)object->position.y)/ CHUNK_SIZE);
 }
 
 void Game::OnBugsSpawned()
